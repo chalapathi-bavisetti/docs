@@ -1,0 +1,122 @@
+GraphQL in Spring Boot: Legacy vs Latest - Interview Notes
+LATEST APPROACH (Official Spring GraphQL)
+Core Dependencies
+For ANY application (MVC or WebFlux):
+
+text
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-graphql</artifactId>
+</dependency>
+Add ONLY if you want reactive (WebFlux):
+
+text
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+Key Features
+Officially supported by Spring team since Spring Boot 2.7+
+Single starter works for both MVC and WebFlux - auto-detects web runtime
+Native reactive support - works seamlessly with Mono and Flux
+Annotation-based controllers (@QueryMapping, @MutationMapping, @SubscriptionMapping)
+Transport agnostic - same core works with HTTP, WebSocket, RSocket
+
+Code Example
+text
+@Controller
+public class BookController {
+    
+    @QueryMapping
+    public Book bookById(@Argument Long id) {
+        return bookService.getBook(id);
+    }
+    
+    @QueryMapping
+    public Flux<Book> allBooks() {
+        return bookService.getAllBooks();
+    }
+}
+Schema Location
+GraphQL schema file: src/main/resources/graphql/**/*.graphqls
+
+When to Use
+All new projects with Spring Boot 2.7+ or 3.x
+When you want official support and future-proofing
+When you need seamless reactive support
+
+LEGACY APPROACH (graphql-java-kickstart)
+Core Dependencies
+For Servlet (MVC) applications:
+
+text
+<dependency>
+    <groupId>com.graphql-java-kickstart</groupId>
+    <artifactId>graphql-spring-boot-starter</artifactId>
+    <version>11.1.0</version>
+</dependency>
+For Reactive (WebFlux) applications - SEPARATE starter:
+
+text
+<dependency>
+    <groupId>com.graphql-java-kickstart</groupId>
+    <artifactId>graphql-spring-boot-starter-webflux</artifactId>
+    <version>11.1.0</version>
+</dependency>
+Optional: GraphiQL for testing:
+
+text
+<dependency>
+    <groupId>com.graphql-java-kickstart</groupId>
+    <artifactId>graphiql-spring-boot-starter</artifactId>
+    <version>11.1.0</version>
+</dependency>
+Key Features
+Community-driven, not official Spring
+Separate starters for MVC vs WebFlux
+Resolver interfaces instead of annotations (GraphQLQueryResolver)
+Limited reactive support - issues with Mono/Flux in early versions
+Mature ecosystem with many tools (GraphiQL, Playground, tools)
+
+Code Example
+text
+@Component
+public class BookQueryResolver implements GraphQLQueryResolver {
+    
+    public Book bookById(Long id) {
+        return bookService.getBook(id);
+    }
+}
+Schema Location
+GraphQL schema file: src/main/resources/**/*.graphqls (often in root resources)
+
+When to Use
+Maintaining existing legacy projects
+When you need specific tools from that ecosystem
+NOT recommended for new projects
+
+INTERVIEW QUESTIONS AND ANSWERS
+Q: Which GraphQL starter would you use for a new Spring Boot project?
+A: For any new Spring Boot project version 2.7 or higher, I would use the official spring-boot-starter-graphql. It's the future-proof, officially supported solution with better reactive support and is actively developed by the Spring team.
+
+Q: What happened to graphql-java-kickstart?
+A: It was the community standard before Spring released its official solution. It's still maintained but is considered legacy now. The official Spring GraphQL project was built in collaboration with the GraphQL Java team as the successor, so it's essentially the evolution of that work.
+
+Q: How do you handle WebFlux with GraphQL in the latest approach?
+A: With the latest approach, you simply add both spring-boot-starter-graphql and spring-boot-starter-webflux dependencies. The GraphQL starter auto-detects that WebFlux is present and configures itself for reactive support automatically.
+
+Q: How was WebFlux handled differently in the legacy approach?
+A: In the legacy approach, you needed a special separate starter called graphql-spring-boot-starter-webflux specifically for reactive applications. The MVC and WebFlux starters were completely different dependencies.
+
+Q: What are the main advantages of the official Spring GraphQL over the legacy approach?
+A: The main advantages are: official support from Spring team, single starter for both MVC and WebFlux, native reactive type support with Mono and Flux, annotation-based programming model which is more familiar to Spring developers, and better integration with the overall Spring ecosystem.
+
+Q: Can you use reactive return types like Mono and Flux with the legacy approach?
+A: It was possible but had limitations and issues. Earlier versions had problems with reactive types, sometimes causing errors like returning FluxJust instead of proper responses. The official Spring solution handles this much more cleanly.
+
+VERSION TIMELINE
+Pre-2021: Legacy (graphql-java-kickstart) was the only option
+2021: Spring GraphQL project was announced by the Spring team
+2022+: Spring Boot 2.7 and above include the official GraphQL starter
+Now: Official Spring GraphQL is recommended for all new projects
+
